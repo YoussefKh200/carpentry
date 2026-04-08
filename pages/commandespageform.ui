@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CommandesPageForm</class>
+ <widget class="QWidget" name="CommandesPageForm">
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="formBox">
+     <property name="title">
+      <string>Formulaire commande</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0"><widget class="QLabel" name="labelProduit"><property name="text"><string>Produit</string></property></widget></item>
+      <item row="0" column="1"><widget class="QLineEdit" name="produitEdit"/></item>
+      <item row="1" column="0"><widget class="QLabel" name="labelQuantite"><property name="text"><string>Quantite</string></property></widget></item>
+      <item row="1" column="1"><widget class="QSpinBox" name="quantiteSpin"/></item>
+      <item row="2" column="0"><widget class="QLabel" name="labelPrix"><property name="text"><string>Prix unitaire</string></property></widget></item>
+      <item row="2" column="1"><widget class="QDoubleSpinBox" name="prixSpin"/></item>
+      <item row="3" column="0"><widget class="QLabel" name="labelTotal"><property name="text"><string>Total</string></property></widget></item>
+      <item row="3" column="1"><widget class="QLineEdit" name="totalEdit"/></item>
+      <item row="4" column="0"><widget class="QLabel" name="labelDateCommande"><property name="text"><string>Date commande</string></property></widget></item>
+      <item row="4" column="1"><widget class="QDateEdit" name="dateCommandeEdit"/></item>
+      <item row="5" column="0"><widget class="QLabel" name="labelDateLivraison"><property name="text"><string>Date livraison</string></property></widget></item>
+      <item row="5" column="1"><widget class="QDateEdit" name="dateLivraisonEdit"/></item>
+      <item row="6" column="0"><widget class="QLabel" name="labelPaiement"><property name="text"><string>Mode paiement</string></property></widget></item>
+      <item row="6" column="1"><widget class="QComboBox" name="modePaiementCombo"/></item>
+      <item row="7" column="1">
+       <layout class="QHBoxLayout" name="buttonsLayout">
+        <item><widget class="QPushButton" name="computeBtn"><property name="text"><string>Calculer</string></property></widget></item>
+        <item><widget class="QPushButton" name="addBtn"><property name="text"><string>Ajouter</string></property></widget></item>
+        <item><widget class="QPushButton" name="updateBtn"><property name="text"><string>Modifier</string></property></widget></item>
+        <item><widget class="QPushButton" name="deleteBtn"><property name="text"><string>Supprimer</string></property></widget></item>
+        <item><widget class="QPushButton" name="clearBtn"><property name="text"><string>Annuler</string></property></widget></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <layout class="QVBoxLayout" name="rightLayout">
+     <item>
+      <layout class="QHBoxLayout" name="filtersLayout">
+       <item><widget class="QLabel" name="labelRecherche"><property name="text"><string>Recherche:</string></property></widget></item>
+       <item><widget class="QLineEdit" name="searchEdit"/></item>
+      </layout>
+     </item>
+     <item><widget class="QTableWidget" name="table"/></item>
+     <item><widget class="QWidget" name="chartHost" native="true"/></item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
