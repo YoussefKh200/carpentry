@@ -1,4 +1,4 @@
-QT += core gui widgets charts sql printsupport
+QT += core gui widgets charts sql printsupport network
 CONFIG += c++17
 TEMPLATE = app
 TARGET = fullpi
@@ -9,6 +9,7 @@ SOURCES += \
     widgets/sidebarwidget.cpp \
     pages/basegestionpage.cpp \
     pages/loginpage.cpp \
+    pages/forgotpassworddialog.cpp \
     pages/settingspage.cpp \
     pages/userspage.cpp \
     pages/clientspage.cpp \
@@ -16,6 +17,8 @@ SOURCES += \
     pages/fournisseurspage.cpp \
     pages/materiauxpage.cpp \
     db/connection.cpp \
+    utils/smtpclient.cpp \
+    services/faceloginservice.cpp \
     models/usercrud.cpp \
     models/clientcrud.cpp \
     models/commandecrud.cpp \
@@ -27,6 +30,7 @@ HEADERS += \
     widgets/sidebarwidget.h \
     pages/basegestionpage.h \
     pages/loginpage.h \
+    pages/forgotpassworddialog.h \
     pages/settingspage.h \
     pages/userspage.h \
     pages/clientspage.h \
@@ -34,6 +38,8 @@ HEADERS += \
     pages/fournisseurspage.h \
     pages/materiauxpage.h \
     db/connection.h \
+    utils/smtpclient.h \
+    services/faceloginservice.h \
     models/usercrud.h \
     models/clientcrud.h \
     models/commandecrud.h \

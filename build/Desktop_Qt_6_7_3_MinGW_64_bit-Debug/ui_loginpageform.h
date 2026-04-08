@@ -40,6 +40,7 @@ public:
     QSpacerItem *horizontalSpacer;
     QPushButton *forgotPasswordBtn;
     QPushButton *loginBtn;
+    QPushButton *faceLoginBtn;
     QFrame *infoCard;
     QVBoxLayout *infoLayout;
     QLabel *welcomeTitle;
@@ -128,6 +129,12 @@ public:
 
         cardLayout->addWidget(loginBtn);
 
+        faceLoginBtn = new QPushButton(PageCard);
+        faceLoginBtn->setObjectName("faceLoginBtn");
+        faceLoginBtn->setStyleSheet(QString::fromUtf8("background:#3f74af; color:#ffffff; border:1px solid #345f8f; border-radius:11px; font-weight:800;"));
+
+        cardLayout->addWidget(faceLoginBtn);
+
 
         rootLayout->addWidget(PageCard);
 
@@ -199,6 +206,7 @@ public:
         rememberMeCheck->setText(QCoreApplication::translate("LoginPageForm", "Se souvenir de moi", nullptr));
         forgotPasswordBtn->setText(QCoreApplication::translate("LoginPageForm", "Mot de passe oublie ?", nullptr));
         loginBtn->setText(QCoreApplication::translate("LoginPageForm", "Se connecter", nullptr));
+        faceLoginBtn->setText(QCoreApplication::translate("LoginPageForm", "Connexion faciale", nullptr));
         welcomeTitle->setText(QCoreApplication::translate("LoginPageForm", "Smart Carpentry", nullptr));
         welcomeText->setText(QCoreApplication::translate("LoginPageForm", "Plateforme centralisee pour gerer utilisateurs, clients, commandes, fournisseurs et materiaux.", nullptr));
         bullet1->setText(QCoreApplication::translate("LoginPageForm", "- Tableau de bord multi-gestions", nullptr));

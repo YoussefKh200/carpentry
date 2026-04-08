@@ -3,6 +3,7 @@ release/mainwindow.o
 release/sidebarwidget.o
 release/basegestionpage.o
 release/loginpage.o
+release/forgotpassworddialog.o
 release/settingspage.o
 release/userspage.o
 release/clientspage.o
@@ -10,6 +11,8 @@ release/commandespage.o
 release/fournisseurspage.o
 release/materiauxpage.o
 release/connection.o
+release/smtpclient.o
+release/faceloginservice.o
 release/usercrud.o
 release/clientcrud.o
 release/commandecrud.o
@@ -20,12 +23,14 @@ release/moc_mainwindow.o
 release/moc_sidebarwidget.o
 release/moc_basegestionpage.o
 release/moc_loginpage.o
+release/moc_forgotpassworddialog.o
 release/moc_settingspage.o
 release/moc_userspage.o
 release/moc_clientspage.o
 release/moc_commandespage.o
 release/moc_fournisseurspage.o
 release/moc_materiauxpage.o
+release/moc_faceloginservice.o
 release/moc_usercrud.o
 release/moc_clientcrud.o
 release/moc_commandecrud.o

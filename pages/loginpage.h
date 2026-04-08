@@ -4,6 +4,7 @@
 #include <QWidget>
 
 #include "../models/usercrud.h"
+#include "../services/faceloginservice.h"
 
 namespace Ui {
 class LoginPageForm;
@@ -22,10 +23,12 @@ signals:
 
 private slots:
     void onLoginClicked();
+    void onFaceLoginClicked();
 
 private:
     Ui::LoginPageForm *ui_;
     UserCrud crud_;
+    FaceLoginService faceService_;
 };
 
 #endif

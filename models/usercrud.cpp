@@ -321,3 +321,108 @@ bool UserCrud::authenticateUser(const QString &identifier, const QString &passwo
     error.clear();
     return true;
 }
+
+bool UserCrud::authenticateFaceUser(const QString &recognizedName, UserData &userOut, QString &error)
+{
+    const QString name = recognizedName.trimmed();
+    if (name.isEmpty()) {
+        error = "Nom reconnu vide";
+        return false;
+    }
+
+    // Temporary hardcoded admin compatibility.
+    if (name.compare("admin", Qt::CaseInsensitive) == 0) {
+        userOut.id = 0;
+        userOut.nom = "admin";
+        userOut.prenom = "admin";
+        userOut.role = "Administrateur";
+        userOut.etat = "Actif";
+        error.clear();
+        return true;
+    }
+
+    if (!Connection::instance()->createConnect()) {
+        error = "Connexion base de donnees echouee";
+        return false;
+    }
+
+    QSqlQuery q(Connection::instance()->database());
+    q.prepare(
+        "SELECT ID_USER, NOM, PRENOM, TEL, MAIL, MDP, SALAIRE, ROLE, ETAT "
+        "FROM USERS WHERE LOWER(NOM)=LOWER(:n)"
+    );
+    q.bindValue(":n", name);
+    if (!q.exec()) {
+        error = q.lastError().text();
+        return false;
+    }
+    if (!q.next()) {
+        error = "Aucun utilisateur ne correspond au visage reconnu";
+        return false;
+    }
+
+    const QString etat = q.value(8).toString().trimmed().toLower();
+    if (etat == "inactif" || etat == "i" || etat == "0") {
+        error = "Compte inactif";
+        return false;
+    }
+
+    userOut = readUserFromQuery(q);
+    error.clear();
+    return true;
+}
+
+bool UserCrud::userExistsByEmail(const QString &email, QString &error)
+{
+    if (!Connection::instance()->createConnect()) {
+        error = "Connexion base de donnees echouee";
+        return false;
+    }
+    const QString e = email.trimmed();
+    if (e.isEmpty()) {
+        error = "Email obligatoire";
+        return false;
+    }
+
+    QSqlQuery q(Connection::instance()->database());
+    q.prepare("SELECT COUNT(*) FROM USERS WHERE LOWER(MAIL)=LOWER(:mail)");
+    q.bindValue(":mail", e);
+    if (!q.exec() || !q.next()) {
+        error = q.lastError().text();
+        return false;
+    }
+
+    if (q.value(0).toInt() <= 0) {
+        error = "Aucun compte associe a cet email";
+        return false;
+    }
+    error.clear();
+    return true;
+}
+
+bool UserCrud::updatePasswordByEmail(const QString &email, const QString &newPassword, QString &error)
+{
+    if (!Connection::instance()->createConnect()) {
+        error = "Connexion base de donnees echouee";
+        return false;
+    }
+    if (newPassword.trimmed().size() < 8) {
+        error = "Mot de passe: minimum 8 caracteres";
+        return false;
+    }
+
+    QSqlQuery q(Connection::instance()->database());
+    q.prepare("UPDATE USERS SET MDP=:mdp WHERE LOWER(MAIL)=LOWER(:mail)");
+    q.bindValue(":mdp", hashPassword(newPassword.trimmed()));
+    q.bindValue(":mail", email.trimmed());
+    if (!q.exec()) {
+        error = q.lastError().text();
+        return false;
+    }
+    if (q.numRowsAffected() <= 0) {
+        error = "Aucun compte mis a jour";
+        return false;
+    }
+    error.clear();
+    return true;
+}

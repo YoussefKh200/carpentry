@@ -105,6 +105,135 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="smtpGroup">
+     <property name="title">
+      <string>Configuration email SMTP (OTP)</string>
+     </property>
+     <layout class="QFormLayout" name="smtpLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="smtpHostLabel">
+        <property name="text">
+         <string>SMTP Host</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="smtpHostEdit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="smtpPortLabel">
+        <property name="text">
+         <string>SMTP Port</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="smtpPortSpin">
+        <property name="maximum">
+         <number>65535</number>
+        </property>
+        <property name="value">
+         <number>465</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="smtpUserLabel">
+        <property name="text">
+         <string>SMTP Username</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="smtpUsernameEdit"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="smtpPassLabel">
+        <property name="text">
+         <string>SMTP Password / App Password</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="smtpPasswordEdit">
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="smtpFromLabel">
+        <property name="text">
+         <string>From Email</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="smtpFromEdit"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="faceGroup">
+     <property name="title">
+      <string>Reconnaissance faciale</string>
+     </property>
+     <layout class="QFormLayout" name="faceLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="faceRepoLabel">
+        <property name="text">
+         <string>Dossier OpenCV-Face-RCGN</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="faceRepoPathEdit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="faceThresholdLabel">
+        <property name="text">
+         <string>Seuil confiance (plus bas = plus strict)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="faceThresholdSpin">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>150</number>
+        </property>
+        <property name="value">
+         <number>120</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="faceTimeoutLabel">
+        <property name="text">
+         <string>Timeout camera (sec)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="faceTimeoutSpin">
+        <property name="minimum">
+         <number>3</number>
+        </property>
+        <property name="maximum">
+         <number>60</number>
+        </property>
+        <property name="value">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="actionsLayout">
      <item>
       <spacer name="horizontalSpacer">

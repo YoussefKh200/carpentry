@@ -28,6 +28,9 @@ public:
     bool updateUser(const UserData &user, QString &error);
     bool deleteUser(int id, QString &error);
     bool authenticateUser(const QString &identifier, const QString &password, UserData &userOut, QString &error);
+    bool authenticateFaceUser(const QString &recognizedName, UserData &userOut, QString &error);
+    bool userExistsByEmail(const QString &email, QString &error);
+    bool updatePasswordByEmail(const QString &email, const QString &newPassword, QString &error);
 
     QList<UserData> getAllUsers(const QString &orderBy = QString());
     QList<UserData> searchUsers(const QString &searchText, const QString &orderBy = QString());

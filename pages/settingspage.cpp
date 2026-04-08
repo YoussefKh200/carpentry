@@ -42,6 +42,14 @@ void SettingsPage::loadSettings()
     ui_->defaultPageCombo->setCurrentIndex(settings.value("app/default_page", 0).toInt());
     ui_->tipsCheck->setChecked(settings.value("app/show_tips", true).toBool());
     ui_->confirmLogoutCheck->setChecked(settings.value("app/confirm_logout", true).toBool());
+    ui_->smtpHostEdit->setText(settings.value("smtp/host").toString());
+    ui_->smtpPortSpin->setValue(settings.value("smtp/port", 465).toInt());
+    ui_->smtpUsernameEdit->setText(settings.value("smtp/username").toString());
+    ui_->smtpPasswordEdit->setText(settings.value("smtp/password").toString());
+    ui_->smtpFromEdit->setText(settings.value("smtp/from").toString());
+    ui_->faceRepoPathEdit->setText(settings.value("face/repo_path", "C:/Users/youss/Documents/reco/OpenCV-Face-RCGN").toString());
+    ui_->faceThresholdSpin->setValue(settings.value("face/threshold", 120).toInt());
+    ui_->faceTimeoutSpin->setValue(settings.value("face/timeout_sec", 10).toInt());
 }
 
 void SettingsPage::onSaveSettings()
@@ -55,6 +63,14 @@ void SettingsPage::onSaveSettings()
     settings.setValue("app/default_page", ui_->defaultPageCombo->currentIndex());
     settings.setValue("app/show_tips", ui_->tipsCheck->isChecked());
     settings.setValue("app/confirm_logout", ui_->confirmLogoutCheck->isChecked());
+    settings.setValue("smtp/host", ui_->smtpHostEdit->text().trimmed());
+    settings.setValue("smtp/port", ui_->smtpPortSpin->value());
+    settings.setValue("smtp/username", ui_->smtpUsernameEdit->text().trimmed());
+    settings.setValue("smtp/password", ui_->smtpPasswordEdit->text());
+    settings.setValue("smtp/from", ui_->smtpFromEdit->text().trimmed());
+    settings.setValue("face/repo_path", ui_->faceRepoPathEdit->text().trimmed());
+    settings.setValue("face/threshold", ui_->faceThresholdSpin->value());
+    settings.setValue("face/timeout_sec", ui_->faceTimeoutSpin->value());
 
     emit windowTitleChanged(title);
     QMessageBox::information(this, "Parametre", "Parametres enregistres avec succes.");

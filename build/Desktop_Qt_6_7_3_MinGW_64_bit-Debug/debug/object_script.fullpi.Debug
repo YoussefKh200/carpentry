@@ -3,6 +3,7 @@ debug/mainwindow.o
 debug/sidebarwidget.o
 debug/basegestionpage.o
 debug/loginpage.o
+debug/forgotpassworddialog.o
 debug/settingspage.o
 debug/userspage.o
 debug/clientspage.o
@@ -10,6 +11,8 @@ debug/commandespage.o
 debug/fournisseurspage.o
 debug/materiauxpage.o
 debug/connection.o
+debug/smtpclient.o
+debug/faceloginservice.o
 debug/usercrud.o
 debug/clientcrud.o
 debug/commandecrud.o
@@ -20,12 +23,14 @@ debug/moc_mainwindow.o
 debug/moc_sidebarwidget.o
 debug/moc_basegestionpage.o
 debug/moc_loginpage.o
+debug/moc_forgotpassworddialog.o
 debug/moc_settingspage.o
 debug/moc_userspage.o
 debug/moc_clientspage.o
 debug/moc_commandespage.o
 debug/moc_fournisseurspage.o
 debug/moc_materiauxpage.o
+debug/moc_faceloginservice.o
 debug/moc_usercrud.o
 debug/moc_clientcrud.o
 debug/moc_commandecrud.o
