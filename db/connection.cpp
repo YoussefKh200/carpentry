@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QSqlError>
+#include <QSqlQuery>
 
 Connection *Connection::instance_ = nullptr;
 
@@ -20,7 +21,11 @@ Connection *Connection::instance()
 bool Connection::createConnect()
 {
     if (db_.isValid() && db_.isOpen()) {
-        return true;
+        QSqlQuery ping(db_);
+        if (ping.exec("SELECT 1 FROM DUAL")) {
+            return true;
+        }
+        db_.close();
     }
 
     if (!QSqlDatabase::contains("fullpi_oracle")) {

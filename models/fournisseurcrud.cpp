@@ -6,6 +6,82 @@
 
 #include "../db/connection.h"
 
+namespace {
+
+struct FournisseurSchema {
+    QString table;
+    QString id;
+    QString nom;
+    QString prenom;
+    QString mail;
+    QString adresse;
+    QString tel;
+    QString quantite;
+    QString type;
+    QString date; // optional
+};
+
+QString pickColumn(const QStringList &columns, const QStringList &tokens, const QString &startsWith = QString())
+{
+    for (const QString &col : columns) {
+        const QString u = col.toUpper();
+        if (!startsWith.isEmpty() && !u.startsWith(startsWith)) continue;
+        bool ok = true;
+        for (const QString &token : tokens) {
+            if (!u.contains(token)) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) return col;
+    }
+    return QString();
+}
+
+FournisseurSchema resolveSchema(const QSqlDatabase &db)
+{
+    FournisseurSchema s;
+    s.table = "FOURNISSEURS";
+
+    QStringList cols;
+    QSqlQuery cq(db);
+    cq.prepare("SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME=:t ORDER BY COLUMN_ID");
+    cq.bindValue(":t", s.table);
+    if (cq.exec()) {
+        while (cq.next()) cols << cq.value(0).toString();
+    }
+
+    s.id = pickColumn(cols, {"ID"}, "ID");
+    s.nom = pickColumn(cols, {"NOM"}, "NOM");
+    s.prenom = pickColumn(cols, {"NOM"}, "PR");
+    s.mail = pickColumn(cols, {"MAIL"});
+    s.adresse = pickColumn(cols, {"ADR"});
+    s.tel = pickColumn(cols, {"TEL"});
+    s.quantite = pickColumn(cols, {"QUANTIT"});
+    s.type = pickColumn(cols, {"TYPE"});
+    s.date = pickColumn(cols, {"DATE"});
+
+    if (s.id.isEmpty()) s.id = "ID_FOURNISSEURS";
+    if (s.nom.isEmpty()) s.nom = "NOM_FOURNISSEURS";
+    if (s.prenom.isEmpty()) s.prenom = "PRENOM_FOURNISSEURS";
+    if (s.mail.isEmpty()) s.mail = "MAIL_FOURNISSEURS";
+    if (s.adresse.isEmpty()) s.adresse = "ADRESSE_FOURNISSEURS";
+    if (s.tel.isEmpty()) s.tel = "TEL_FOURNISSEURS";
+    if (s.quantite.isEmpty()) s.quantite = "QUANTITE_FOURNISSEURS";
+    if (s.type.isEmpty()) s.type = "TYPE_FOURNISSEURS";
+    return s;
+}
+
+int nextId(const QSqlDatabase &db, const FournisseurSchema &s)
+{
+    QSqlQuery q(db);
+    if (!q.exec("SELECT NVL(MAX(" + s.id + "), 0) + 1 FROM " + s.table)) return 1;
+    if (!q.next()) return 1;
+    return q.value(0).toInt();
+}
+
+}
+
 FournisseurCrud::FournisseurCrud(QObject *parent) : QObject(parent)
 {
 }
@@ -22,7 +98,6 @@ QString FournisseurCrud::validateFournisseur(const FournisseurData &f)
 
     if (f.quantite < 0) return "Quantite invalide";
     if (f.type.trimmed().isEmpty()) return "Type obligatoire";
-    if (!f.date.isValid()) return "Date invalide";
     return QString();
 }
 
@@ -50,16 +125,28 @@ bool FournisseurCrud::addFournisseur(const FournisseurData &f, QString &error)
     error = validateFournisseur(f);
     if (!error.isEmpty()) return false;
 
-    QSqlQuery q(Connection::instance()->database());
-    q.prepare("INSERT INTO FOURNISSEURS (NOM_FOURNISSEURS, PRENOM_FOURNISSEURS, MAIL_FOURNISSEURS, ADRESSE_FOURNISSEURS, TEL_FOURNISSEURS, QUANTITE_FOURNISSEURS, TYPE_FOURNISSEURS, DATE_FOURNISSEURS) VALUES (:nom, :prenom, :mail, :adresse, :tel, :qte, :type, :datef)");
-    q.bindValue(":nom", f.nom.trimmed());
-    q.bindValue(":prenom", f.prenom.trimmed());
-    q.bindValue(":mail", f.mail.trimmed());
-    q.bindValue(":adresse", f.adresse.trimmed());
-    q.bindValue(":tel", f.tel.trimmed());
-    q.bindValue(":qte", f.quantite);
-    q.bindValue(":type", f.type.trimmed());
-    q.bindValue(":datef", f.date);
+    const QSqlDatabase db = Connection::instance()->database();
+    const FournisseurSchema s = resolveSchema(db);
+    const int id = nextId(db, s);
+
+    QStringList cols {s.id, s.nom, s.prenom, s.mail, s.adresse, s.tel, s.quantite, s.type};
+    QStringList ph {"?", "?", "?", "?", "?", "?", "?", "?"};
+    if (!s.date.isEmpty()) {
+        cols << s.date;
+        ph << "?";
+    }
+
+    QSqlQuery q(db);
+    q.prepare("INSERT INTO " + s.table + " (" + cols.join(", ") + ") VALUES (" + ph.join(", ") + ")");
+    q.addBindValue(id);
+    q.addBindValue(f.nom.trimmed());
+    q.addBindValue(f.prenom.trimmed());
+    q.addBindValue(f.mail.trimmed());
+    q.addBindValue(f.adresse.trimmed());
+    q.addBindValue(f.tel.trimmed());
+    q.addBindValue(f.quantite);
+    q.addBindValue(f.type.trimmed());
+    if (!s.date.isEmpty()) q.addBindValue(f.date);
 
     if (!q.exec()) {
         error = q.lastError().text();
@@ -82,17 +169,22 @@ bool FournisseurCrud::updateFournisseur(const FournisseurData &f, QString &error
     error = validateFournisseur(f);
     if (!error.isEmpty()) return false;
 
-    QSqlQuery q(Connection::instance()->database());
-    q.prepare("UPDATE FOURNISSEURS SET NOM_FOURNISSEURS=:nom, PRENOM_FOURNISSEURS=:prenom, MAIL_FOURNISSEURS=:mail, ADRESSE_FOURNISSEURS=:adresse, TEL_FOURNISSEURS=:tel, QUANTITE_FOURNISSEURS=:qte, TYPE_FOURNISSEURS=:type, DATE_FOURNISSEURS=:datef WHERE ID_FOURNISSEURS=:id");
-    q.bindValue(":id", f.id);
-    q.bindValue(":nom", f.nom.trimmed());
-    q.bindValue(":prenom", f.prenom.trimmed());
-    q.bindValue(":mail", f.mail.trimmed());
-    q.bindValue(":adresse", f.adresse.trimmed());
-    q.bindValue(":tel", f.tel.trimmed());
-    q.bindValue(":qte", f.quantite);
-    q.bindValue(":type", f.type.trimmed());
-    q.bindValue(":datef", f.date);
+    const QSqlDatabase db = Connection::instance()->database();
+    const FournisseurSchema s = resolveSchema(db);
+    QStringList sets {s.nom + "=?", s.prenom + "=?", s.mail + "=?", s.adresse + "=?", s.tel + "=?", s.quantite + "=?", s.type + "=?"};
+    if (!s.date.isEmpty()) sets << s.date + "=?";
+
+    QSqlQuery q(db);
+    q.prepare("UPDATE " + s.table + " SET " + sets.join(", ") + " WHERE " + s.id + "=?");
+    q.addBindValue(f.nom.trimmed());
+    q.addBindValue(f.prenom.trimmed());
+    q.addBindValue(f.mail.trimmed());
+    q.addBindValue(f.adresse.trimmed());
+    q.addBindValue(f.tel.trimmed());
+    q.addBindValue(f.quantite);
+    q.addBindValue(f.type.trimmed());
+    if (!s.date.isEmpty()) q.addBindValue(f.date);
+    q.addBindValue(f.id);
 
     if (!q.exec()) {
         error = q.lastError().text();
@@ -112,8 +204,10 @@ bool FournisseurCrud::deleteFournisseur(int id, QString &error)
         return false;
     }
 
-    QSqlQuery q(Connection::instance()->database());
-    q.prepare("DELETE FROM FOURNISSEURS WHERE ID_FOURNISSEURS=:id");
+    const QSqlDatabase db = Connection::instance()->database();
+    const FournisseurSchema s = resolveSchema(db);
+    QSqlQuery q(db);
+    q.prepare("DELETE FROM " + s.table + " WHERE " + s.id + "=:id");
     q.bindValue(":id", id);
     if (!q.exec()) {
         error = q.lastError().text();
@@ -126,21 +220,21 @@ QList<FournisseurData> FournisseurCrud::getAllFournisseurs(const QString &orderB
 {
     QList<FournisseurData> out;
     if (!Connection::instance()->createConnect()) return out;
+    const QSqlDatabase db = Connection::instance()->database();
+    const FournisseurSchema s = resolveSchema(db);
 
-    QString order = "ID_FOURNISSEURS";
-    if (orderBy == "nom") order = "NOM_FOURNISSEURS";
-    else if (orderBy == "type") order = "TYPE_FOURNISSEURS";
-    else if (orderBy == "quantite") order = "QUANTITE_FOURNISSEURS DESC";
-    else if (orderBy == "date") order = "DATE_FOURNISSEURS DESC";
+    QString order = s.id;
+    if (orderBy == "nom") order = s.nom;
+    else if (orderBy == "type") order = s.type;
+    else if (orderBy == "quantite") order = s.quantite + " DESC";
+    else if (orderBy == "date" && !s.date.isEmpty()) order = s.date + " DESC";
 
-    QSqlQuery q(Connection::instance()->database());
+    const QString dateSelect = s.date.isEmpty() ? "NULL" : s.date;
+    QSqlQuery q(db);
     const QString sql =
-        "SELECT ID_FOURNISSEURS, NOM_FOURNISSEURS, PRENOM_FOURNISSEURS, MAIL_FOURNISSEURS, ADRESSE_FOURNISSEURS, TEL_FOURNISSEURS, QUANTITE_FOURNISSEURS, TYPE_FOURNISSEURS, DATE_FOURNISSEURS "
-        "FROM FOURNISSEURS ORDER BY " + order;
-    if (!q.exec(sql)) {
-        return out;
-    }
-
+        "SELECT " + s.id + ", " + s.nom + ", " + s.prenom + ", " + s.mail + ", " + s.adresse + ", " + s.tel + ", " + s.quantite + ", " + s.type + ", " + dateSelect + " "
+        "FROM " + s.table + " ORDER BY " + order;
+    if (!q.exec(sql)) return out;
     while (q.next()) out.append(fromQuery(q));
     return out;
 }
@@ -151,20 +245,23 @@ QList<FournisseurData> FournisseurCrud::searchFournisseurs(const QString &typeTe
     if (typeText.trimmed().isEmpty()) return getAllFournisseurs(orderBy);
 
     QList<FournisseurData> out;
-    QString order = "ID_FOURNISSEURS";
-    if (orderBy == "nom") order = "NOM_FOURNISSEURS";
-    else if (orderBy == "type") order = "TYPE_FOURNISSEURS";
-    else if (orderBy == "quantite") order = "QUANTITE_FOURNISSEURS DESC";
-    else if (orderBy == "date") order = "DATE_FOURNISSEURS DESC";
+    const QSqlDatabase db = Connection::instance()->database();
+    const FournisseurSchema s = resolveSchema(db);
 
-    QSqlQuery q(Connection::instance()->database());
+    QString order = s.id;
+    if (orderBy == "nom") order = s.nom;
+    else if (orderBy == "type") order = s.type;
+    else if (orderBy == "quantite") order = s.quantite + " DESC";
+    else if (orderBy == "date" && !s.date.isEmpty()) order = s.date + " DESC";
+
+    const QString dateSelect = s.date.isEmpty() ? "NULL" : s.date;
+    QSqlQuery q(db);
     q.prepare(
-        "SELECT ID_FOURNISSEURS, NOM_FOURNISSEURS, PRENOM_FOURNISSEURS, MAIL_FOURNISSEURS, ADRESSE_FOURNISSEURS, TEL_FOURNISSEURS, QUANTITE_FOURNISSEURS, TYPE_FOURNISSEURS, DATE_FOURNISSEURS "
-        "FROM FOURNISSEURS WHERE LOWER(TYPE_FOURNISSEURS) LIKE :s ORDER BY " + order
+        "SELECT " + s.id + ", " + s.nom + ", " + s.prenom + ", " + s.mail + ", " + s.adresse + ", " + s.tel + ", " + s.quantite + ", " + s.type + ", " + dateSelect + " "
+        "FROM " + s.table + " WHERE LOWER(" + s.type + ") LIKE :s ORDER BY " + order
     );
     q.bindValue(":s", "%" + typeText.toLower() + "%");
     if (!q.exec()) return out;
-
     while (q.next()) out.append(fromQuery(q));
     return out;
 }
@@ -173,13 +270,11 @@ QList<QPair<QString, int>> FournisseurCrud::quantiteByType()
 {
     QList<QPair<QString, int>> out;
     if (!Connection::instance()->createConnect()) return out;
-    QSqlQuery q(Connection::instance()->database());
-    if (!q.exec("SELECT TYPE_FOURNISSEURS, SUM(QUANTITE_FOURNISSEURS) FROM FOURNISSEURS GROUP BY TYPE_FOURNISSEURS ORDER BY TYPE_FOURNISSEURS")) {
-        return out;
-    }
+    const QSqlDatabase db = Connection::instance()->database();
+    const FournisseurSchema s = resolveSchema(db);
 
-    while (q.next()) {
-        out.append(qMakePair(q.value(0).toString(), q.value(1).toInt()));
-    }
+    QSqlQuery q(db);
+    if (!q.exec("SELECT " + s.type + ", SUM(" + s.quantite + ") FROM " + s.table + " GROUP BY " + s.type + " ORDER BY " + s.type)) return out;
+    while (q.next()) out.append(qMakePair(q.value(0).toString(), q.value(1).toInt()));
     return out;
 }
