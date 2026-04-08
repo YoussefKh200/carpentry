@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <QHBoxLayout>
+#include <QSettings>
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
@@ -9,7 +10,9 @@
 #include "pages/clientspage.h"
 #include "pages/commandespage.h"
 #include "pages/fournisseurspage.h"
+#include "pages/loginpage.h"
 #include "pages/materiauxpage.h"
+#include "pages/settingspage.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -17,14 +20,17 @@ MainWindow::MainWindow(QWidget *parent)
       ui(new Ui::MainWindow),
       stack_(new QStackedWidget(this)),
       sidebar_(new SidebarWidget(this)),
+      loginPage_(new LoginPage(this)),
       usersPage_(new UsersPage(this)),
       clientsPage_(new ClientsPage(this)),
       commandesPage_(new CommandesPage(this)),
       fournisseursPage_(new FournisseursPage(this)),
-      materiauxPage_(new MateriauxPage(this))
+      materiauxPage_(new MateriauxPage(this)),
+      settingsPage_(new SettingsPage(this))
 {
     ui->setupUi(this);
-    setWindowTitle("FullPI - Smart Carpentry Management");
+    QSettings settings;
+    setWindowTitle(settings.value("app/window_title", "Smart Carpentry Management").toString());
     resize(1400, 900);
 
     setupLayout();
@@ -48,14 +54,43 @@ void MainWindow::setupLayout()
     contentLayout->setSpacing(0);
     contentLayout->addWidget(stack_);
 
+    stack_->addWidget(loginPage_);
     stack_->addWidget(usersPage_);
     stack_->addWidget(clientsPage_);
     stack_->addWidget(commandesPage_);
     stack_->addWidget(fournisseursPage_);
     stack_->addWidget(materiauxPage_);
+    stack_->addWidget(settingsPage_);
 
-    connect(sidebar_, &SidebarWidget::navigateTo, stack_, &QStackedWidget::setCurrentIndex);
-    connect(stack_, &QStackedWidget::currentChanged, sidebar_, &SidebarWidget::setActiveIndex);
+    ui->sidebarHost->hide();
+    stack_->setCurrentIndex(0);
+
+    connect(sidebar_, &SidebarWidget::navigateTo, stack_, [this](int index) {
+        if (index >= 0) stack_->setCurrentIndex(index + 1);
+    });
+    connect(stack_, &QStackedWidget::currentChanged, this, [this](int index) {
+        if (index > 0) sidebar_->setActiveIndex(index - 1);
+    });
+    connect(loginPage_, &LoginPage::loginSucceeded, this, &MainWindow::onLoginSucceeded);
+    connect(sidebar_, &SidebarWidget::logoutRequested, this, [this]() {
+        ui->sidebarHost->hide();
+        stack_->setCurrentIndex(0);
+    });
+    connect(settingsPage_, &SettingsPage::windowTitleChanged, this, [this](const QString &title) {
+        setWindowTitle(title);
+    });
+}
+
+void MainWindow::onLoginSucceeded(const UserData &user)
+{
+    Q_UNUSED(user);
+    ui->sidebarHost->show();
+    QSettings settings;
+    int defaultPage = settings.value("app/default_page", 0).toInt();
+    if (defaultPage < 0) defaultPage = 0;
+    if (defaultPage > 5) defaultPage = 5;
+    stack_->setCurrentIndex(defaultPage + 1);
+    sidebar_->setActiveIndex(defaultPage);
 }
 
 void MainWindow::setupStyle()

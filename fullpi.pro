@@ -8,6 +8,8 @@ SOURCES += \
     mainwindow.cpp \
     widgets/sidebarwidget.cpp \
     pages/basegestionpage.cpp \
+    pages/loginpage.cpp \
+    pages/settingspage.cpp \
     pages/userspage.cpp \
     pages/clientspage.cpp \
     pages/commandespage.cpp \
@@ -24,6 +26,8 @@ HEADERS += \
     mainwindow.h \
     widgets/sidebarwidget.h \
     pages/basegestionpage.h \
+    pages/loginpage.h \
+    pages/settingspage.h \
     pages/userspage.h \
     pages/clientspage.h \
     pages/commandespage.h \
@@ -38,6 +42,8 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui \
+    pages/loginpageform.ui \
+    pages/settingspageform.ui \
     pages/userspageform.ui \
     pages/clientspageform.ui \
     pages/commandespageform.ui \

@@ -27,6 +27,7 @@ public:
     bool addUser(const UserData &user, QString &error);
     bool updateUser(const UserData &user, QString &error);
     bool deleteUser(int id, QString &error);
+    bool authenticateUser(const QString &identifier, const QString &password, UserData &userOut, QString &error);
 
     QList<UserData> getAllUsers(const QString &orderBy = QString());
     QList<UserData> searchUsers(const QString &searchText, const QString &orderBy = QString());

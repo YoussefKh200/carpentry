@@ -2,6 +2,8 @@ release/main.o
 release/mainwindow.o
 release/sidebarwidget.o
 release/basegestionpage.o
+release/loginpage.o
+release/settingspage.o
 release/userspage.o
 release/clientspage.o
 release/commandespage.o
@@ -17,6 +19,8 @@ release/qrc_resources.o
 release/moc_mainwindow.o
 release/moc_sidebarwidget.o
 release/moc_basegestionpage.o
+release/moc_loginpage.o
+release/moc_settingspage.o
 release/moc_userspage.o
 release/moc_clientspage.o
 release/moc_commandespage.o

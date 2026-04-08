@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    app.setApplicationName("FullPI Smart Carpentry");
+    app.setApplicationName("Smart Carpentry");
 
     MainWindow window;
     window.show();

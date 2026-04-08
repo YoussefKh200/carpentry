@@ -14,6 +14,19 @@ QString hashPassword(const QString &password)
     const QByteArray digest = QCryptographicHash::hash((password + salt).toUtf8(), QCryptographicHash::Sha256).toHex();
     return QString::fromUtf8(digest) + "$" + salt;
 }
+
+bool verifyPassword(const QString &rawPassword, const QString &stored)
+{
+    if (stored.contains("$")) {
+        const QStringList parts = stored.split('$');
+        if (parts.size() != 2) return false;
+        const QString expectedHash = parts[0];
+        const QString salt = parts[1];
+        const QByteArray digest = QCryptographicHash::hash((rawPassword + salt).toUtf8(), QCryptographicHash::Sha256).toHex();
+        return QString::fromUtf8(digest) == expectedHash;
+    }
+    return rawPassword == stored;
+}
 }
 
 UserCrud::UserCrud(QObject *parent) : QObject(parent)
@@ -251,4 +264,60 @@ QString UserCrud::resolvePasswordForUpdate(const UserData &user, QString &error)
         return QString();
     }
     return query.value(0).toString();
+}
+
+bool UserCrud::authenticateUser(const QString &identifier, const QString &password, UserData &userOut, QString &error)
+{
+    // Temporary hardcoded admin access (requested).
+    if (identifier.trimmed().compare("admin", Qt::CaseInsensitive) == 0 && password == "admin") {
+        userOut.id = 0;
+        userOut.nom = "admin";
+        userOut.prenom = "admin";
+        userOut.role = "Administrateur";
+        userOut.etat = "Actif";
+        error.clear();
+        return true;
+    }
+
+    if (!Connection::instance()->createConnect()) {
+        error = "Connexion base de donnees echouee";
+        return false;
+    }
+
+    const QString idf = identifier.trimmed();
+    if (idf.isEmpty() || password.isEmpty()) {
+        error = "Nom d'utilisateur et mot de passe obligatoires";
+        return false;
+    }
+
+    QSqlQuery q(Connection::instance()->database());
+    q.prepare(
+        "SELECT ID_USER, NOM, PRENOM, TEL, MAIL, MDP, SALAIRE, ROLE, ETAT "
+        "FROM USERS WHERE LOWER(NOM)=LOWER(:idf)"
+    );
+    q.bindValue(":idf", idf);
+    if (!q.exec()) {
+        error = q.lastError().text();
+        return false;
+    }
+    if (!q.next()) {
+        error = "Utilisateur introuvable";
+        return false;
+    }
+
+    const QString storedPassword = q.value(5).toString();
+    if (!verifyPassword(password, storedPassword)) {
+        error = "Mot de passe incorrect";
+        return false;
+    }
+
+    const QString etat = q.value(8).toString().trimmed().toLower();
+    if (etat == "inactif" || etat == "i" || etat == "0") {
+        error = "Compte inactif";
+        return false;
+    }
+
+    userOut = readUserFromQuery(q);
+    error.clear();
+    return true;
 }

@@ -13,10 +13,13 @@ public:
 
 signals:
     void navigateTo(int index);
+    void logoutRequested();
 
 private:
     void addButton(const QString &text, int index);
     QList<class QPushButton *> buttons_;
+    class QPushButton *settingsBtn_;
+    class QPushButton *logoutBtn_;
 };
 
 #endif

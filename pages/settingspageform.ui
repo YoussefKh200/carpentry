@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsPageForm</class>
+ <widget class="QWidget" name="SettingsPageForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>860</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>14</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="introLabel">
+     <property name="styleSheet">
+      <string notr="true">color:#000000; font-weight:700;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Personnalisez votre espace Smart Carpentry: titre de la fenetre, page de demarrage et options de connexion.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="generalGroup">
+     <property name="title">
+      <string>General</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="windowTitleLabel">
+        <property name="text">
+         <string>Titre fenetre</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="windowTitleEdit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="defaultPageLabel">
+        <property name="text">
+         <string>Page par defaut apres login</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="defaultPageCombo"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="experienceGroup">
+     <property name="title">
+      <string>Experience utilisateur</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="tipsCheck">
+        <property name="styleSheet">
+         <string notr="true">color:#000000;</string>
+        </property>
+        <property name="text">
+         <string>Afficher des conseils rapides sur les pages</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="confirmLogoutCheck">
+        <property name="styleSheet">
+         <string notr="true">color:#000000;</string>
+        </property>
+        <property name="text">
+         <string>Demander confirmation avant deconnexion</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="securityGroup">
+     <property name="title">
+      <string>Connexion</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QPushButton" name="clearRememberBtn">
+        <property name="styleSheet">
+         <string notr="true">background:#f3f8ff; color:#1f3f66; border:1px solid #b8cde8; border-radius:10px; font-weight:700;</string>
+        </property>
+        <property name="text">
+         <string>Effacer l'identifiant memorise (Remember me)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="actionsLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="saveBtn">
+      <property name="styleSheet">
+       <string notr="true">background:#a85a31; color:#ffffff; border:1px solid #8f4a26; border-radius:11px; font-weight:800;</string>
+      </property>
+       <property name="text">
+        <string>Enregistrer</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

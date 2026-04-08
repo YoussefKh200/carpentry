@@ -28,6 +28,13 @@ SidebarWidget::SidebarWidget(QWidget *parent) : QFrame(parent)
     addButton("Gestion Materiaux", 4);
 
     layout->addStretch();
+    addButton("Parametre", 5);
+
+    logoutBtn_ = new QPushButton("Deconnexion", this);
+    logoutBtn_->setCheckable(false);
+    layout->addWidget(logoutBtn_);
+    connect(logoutBtn_, &QPushButton::clicked, this, &SidebarWidget::logoutRequested);
+
     setActiveIndex(0);
 
     setStyleSheet(
@@ -48,6 +55,7 @@ void SidebarWidget::addButton(const QString &text, int index)
 {
     auto *button = new QPushButton(text, this);
     button->setCheckable(true);
+    if (index == 5) settingsBtn_ = button;
     buttons_.append(button);
     layout()->addWidget(button);
     connect(button, &QPushButton::clicked, this, [this, index]() {
