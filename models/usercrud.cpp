@@ -268,11 +268,12 @@ QString UserCrud::resolvePasswordForUpdate(const UserData &user, QString &error)
 
 bool UserCrud::authenticateUser(const QString &identifier, const QString &password, UserData &userOut, QString &error)
 {
-    // Temporary hardcoded admin access (requested).
+    // TEMPORARY: Hardcoded admin fallback for initial setup only.
+    // Remove this once a real admin user is created in the DB with ROLE='Administrateur'.
     if (identifier.trimmed().compare("admin", Qt::CaseInsensitive) == 0 && password == "admin") {
-        userOut.id = 0;
-        userOut.nom = "admin";
-        userOut.prenom = "admin";
+        userOut.id = 1;
+        userOut.nom = "Admin";
+        userOut.prenom = "Admin";
         userOut.role = "Administrateur";
         userOut.etat = "Actif";
         error.clear();
@@ -330,11 +331,12 @@ bool UserCrud::authenticateFaceUser(const QString &recognizedName, UserData &use
         return false;
     }
 
-    // Temporary hardcoded admin compatibility.
+    // TEMPORARY: Hardcoded admin fallback for initial setup only.
+    // Remove this once a real admin user is created in the DB with ROLE='Administrateur'.
     if (name.compare("admin", Qt::CaseInsensitive) == 0) {
-        userOut.id = 0;
-        userOut.nom = "admin";
-        userOut.prenom = "admin";
+        userOut.id = 1;
+        userOut.nom = "Admin";
+        userOut.prenom = "Admin";
         userOut.role = "Administrateur";
         userOut.etat = "Actif";
         error.clear();
@@ -411,10 +413,38 @@ bool UserCrud::updatePasswordByEmail(const QString &email, const QString &newPas
         return false;
     }
 
+    const QString mail = email.trimmed();
+    if (mail.isEmpty()) {
+        error = "Email obligatoire";
+        return false;
+    }
+
+    // Resolve the user by email first to avoid accidental mass updates
+    // and check if the user is an admin (ROLE='Administrateur').
+    QSqlQuery sel(Connection::instance()->database());
+    sel.prepare("SELECT ID_USER, ROLE FROM USERS WHERE LOWER(MAIL)=LOWER(:mail)");
+    sel.bindValue(":mail", mail);
+    if (!sel.exec()) {
+        error = sel.lastError().text();
+        return false;
+    }
+    if (!sel.next()) {
+        error = "Aucun compte associe a cet email";
+        return false;
+    }
+
+    const int id = sel.value(0).toInt();
+    const QString role = sel.value(1).toString().trimmed();
+    // Protect administrative accounts (ROLE='Administrateur')
+    if (role == "Administrateur") {
+        error = "Impossible de reinitialiser le mot de passe d'un compte administrateur";
+        return false;
+    }
+
     QSqlQuery q(Connection::instance()->database());
-    q.prepare("UPDATE USERS SET MDP=:mdp WHERE LOWER(MAIL)=LOWER(:mail)");
+    q.prepare("UPDATE USERS SET MDP=:mdp WHERE ID_USER=:id");
     q.bindValue(":mdp", hashPassword(newPassword.trimmed()));
-    q.bindValue(":mail", email.trimmed());
+    q.bindValue(":id", id);
     if (!q.exec()) {
         error = q.lastError().text();
         return false;

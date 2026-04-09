@@ -4363,10 +4363,9 @@ release/forgotpassworddialog.o: ../../pages/forgotpassworddialog.cpp ../../pages
 		C:/Qt/6.7.3/mingw_64/include/QtWidgets/qabstractbutton.h \
 		C:/Qt/6.7.3/mingw_64/include/QtCore/QRandomGenerator \
 		C:/Qt/6.7.3/mingw_64/include/QtCore/qrandom.h \
-		C:/Qt/6.7.3/mingw_64/include/QtCore/QSettings \
-		C:/Qt/6.7.3/mingw_64/include/QtCore/qsettings.h \
-		C:/Qt/6.7.3/mingw_64/include/QtWidgets/QVBoxLayout \
-		../../utils/smtpclient.h
+		../../utils/smtpconfig.h \
+		../../utils/smtpclient.h \
+		C:/Qt/6.7.3/mingw_64/include/QtWidgets/QVBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\forgotpassworddialog.o ..\..\pages\forgotpassworddialog.cpp
 
 release/settingspage.o: ../../pages/settingspage.cpp ../../pages/settingspage.h \

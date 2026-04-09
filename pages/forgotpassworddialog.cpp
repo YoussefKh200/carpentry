@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRandomGenerator>
-#include <QSettings>
+#include "../utils/smtpconfig.h"
 #include <QVBoxLayout>
 
 #include "../utils/smtpclient.h"
@@ -58,21 +58,21 @@ void ForgotPasswordDialog::onSendCode()
     QString err;
     const QString email = emailEdit_->text().trimmed();
     if (!crud_.userExistsByEmail(email, err)) {
-        statusLabel_->setText(err);
-        return;
+        const auto reply = QMessageBox::question(this, "Envoyer quand meme?",
+                                                 err + "\n\nEnvoyer le code OTP a cette adresse pour tests?",
+                                                 QMessageBox::Yes | QMessageBox::No);
+        if (reply != QMessageBox::Yes) {
+            statusLabel_->setText(err);
+            return;
+        }
+        // Continue even if no account is associated — useful for SMTP testing with temp emails.
     }
 
     otp_ = QString::number(QRandomGenerator::global()->bounded(100000, 1000000));
     otpExpiry_ = QDateTime::currentDateTime().addSecs(300);
     currentEmail_ = email;
 
-    QSettings settings;
-    SmtpConfig cfg;
-    cfg.host = settings.value("smtp/host").toString();
-    cfg.port = settings.value("smtp/port", 465).toInt();
-    cfg.username = settings.value("smtp/username").toString();
-    cfg.password = settings.value("smtp/password").toString();
-    cfg.from = settings.value("smtp/from").toString();
+    SmtpConfig cfg = defaultSmtpConfig();
 
     const QString body =
         "Bonjour,\n\n"

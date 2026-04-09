@@ -44,18 +44,6 @@ public:
     QGroupBox *securityGroup;
     QVBoxLayout *verticalLayout_2;
     QPushButton *clearRememberBtn;
-    QGroupBox *smtpGroup;
-    QFormLayout *smtpLayout;
-    QLabel *smtpHostLabel;
-    QLineEdit *smtpHostEdit;
-    QLabel *smtpPortLabel;
-    QSpinBox *smtpPortSpin;
-    QLabel *smtpUserLabel;
-    QLineEdit *smtpUsernameEdit;
-    QLabel *smtpPassLabel;
-    QLineEdit *smtpPasswordEdit;
-    QLabel *smtpFromLabel;
-    QLineEdit *smtpFromEdit;
     QGroupBox *faceGroup;
     QFormLayout *faceLayout;
     QLabel *faceRepoLabel;
@@ -142,66 +130,6 @@ public:
 
         verticalLayout->addWidget(securityGroup);
 
-        smtpGroup = new QGroupBox(SettingsPageForm);
-        smtpGroup->setObjectName("smtpGroup");
-        smtpLayout = new QFormLayout(smtpGroup);
-        smtpLayout->setObjectName("smtpLayout");
-        smtpHostLabel = new QLabel(smtpGroup);
-        smtpHostLabel->setObjectName("smtpHostLabel");
-
-        smtpLayout->setWidget(0, QFormLayout::LabelRole, smtpHostLabel);
-
-        smtpHostEdit = new QLineEdit(smtpGroup);
-        smtpHostEdit->setObjectName("smtpHostEdit");
-
-        smtpLayout->setWidget(0, QFormLayout::FieldRole, smtpHostEdit);
-
-        smtpPortLabel = new QLabel(smtpGroup);
-        smtpPortLabel->setObjectName("smtpPortLabel");
-
-        smtpLayout->setWidget(1, QFormLayout::LabelRole, smtpPortLabel);
-
-        smtpPortSpin = new QSpinBox(smtpGroup);
-        smtpPortSpin->setObjectName("smtpPortSpin");
-        smtpPortSpin->setMaximum(65535);
-        smtpPortSpin->setValue(465);
-
-        smtpLayout->setWidget(1, QFormLayout::FieldRole, smtpPortSpin);
-
-        smtpUserLabel = new QLabel(smtpGroup);
-        smtpUserLabel->setObjectName("smtpUserLabel");
-
-        smtpLayout->setWidget(2, QFormLayout::LabelRole, smtpUserLabel);
-
-        smtpUsernameEdit = new QLineEdit(smtpGroup);
-        smtpUsernameEdit->setObjectName("smtpUsernameEdit");
-
-        smtpLayout->setWidget(2, QFormLayout::FieldRole, smtpUsernameEdit);
-
-        smtpPassLabel = new QLabel(smtpGroup);
-        smtpPassLabel->setObjectName("smtpPassLabel");
-
-        smtpLayout->setWidget(3, QFormLayout::LabelRole, smtpPassLabel);
-
-        smtpPasswordEdit = new QLineEdit(smtpGroup);
-        smtpPasswordEdit->setObjectName("smtpPasswordEdit");
-        smtpPasswordEdit->setEchoMode(QLineEdit::Password);
-
-        smtpLayout->setWidget(3, QFormLayout::FieldRole, smtpPasswordEdit);
-
-        smtpFromLabel = new QLabel(smtpGroup);
-        smtpFromLabel->setObjectName("smtpFromLabel");
-
-        smtpLayout->setWidget(4, QFormLayout::LabelRole, smtpFromLabel);
-
-        smtpFromEdit = new QLineEdit(smtpGroup);
-        smtpFromEdit->setObjectName("smtpFromEdit");
-
-        smtpLayout->setWidget(4, QFormLayout::FieldRole, smtpFromEdit);
-
-
-        verticalLayout->addWidget(smtpGroup);
-
         faceGroup = new QGroupBox(SettingsPageForm);
         faceGroup->setObjectName("faceGroup");
         faceLayout = new QFormLayout(faceGroup);
@@ -277,12 +205,6 @@ public:
         confirmLogoutCheck->setText(QCoreApplication::translate("SettingsPageForm", "Demander confirmation avant deconnexion", nullptr));
         securityGroup->setTitle(QCoreApplication::translate("SettingsPageForm", "Connexion", nullptr));
         clearRememberBtn->setText(QCoreApplication::translate("SettingsPageForm", "Effacer l'identifiant memorise (Remember me)", nullptr));
-        smtpGroup->setTitle(QCoreApplication::translate("SettingsPageForm", "Configuration email SMTP (OTP)", nullptr));
-        smtpHostLabel->setText(QCoreApplication::translate("SettingsPageForm", "SMTP Host", nullptr));
-        smtpPortLabel->setText(QCoreApplication::translate("SettingsPageForm", "SMTP Port", nullptr));
-        smtpUserLabel->setText(QCoreApplication::translate("SettingsPageForm", "SMTP Username", nullptr));
-        smtpPassLabel->setText(QCoreApplication::translate("SettingsPageForm", "SMTP Password / App Password", nullptr));
-        smtpFromLabel->setText(QCoreApplication::translate("SettingsPageForm", "From Email", nullptr));
         faceGroup->setTitle(QCoreApplication::translate("SettingsPageForm", "Reconnaissance faciale", nullptr));
         faceRepoLabel->setText(QCoreApplication::translate("SettingsPageForm", "Dossier OpenCV-Face-RCGN", nullptr));
         faceThresholdLabel->setText(QCoreApplication::translate("SettingsPageForm", "Seuil confiance (plus bas = plus strict)", nullptr));

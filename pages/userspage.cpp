@@ -35,6 +35,7 @@ UsersPage::UsersPage(QWidget *parent)
     const bool connected = Connection::instance()->createConnect();
 
     ui_->roleCombo->addItems({
+        "Administrateur",
         "Responsable client",
         "Responsable materiaux",
         "Responsable achats",
